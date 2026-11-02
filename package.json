@@ -1,0 +1,27 @@
+{
+  "name": "hanway-trading-bot",
+  "version": "1.0.0",
+  "description": "HAN WAY Crypto Multi-Regime Dry Run Trading Bot on Indodax (UAS Algoritma Trading)",
+  "main": "api/tick.js",
+  "type": "module",
+  "scripts": {
+    "fetch:data": "node scripts/fetch_history.js",
+    "backtest": "node scripts/backtest.js",
+    "dryrun:replay": "node scripts/dryrun_replay.js",
+    "recalculate": "node scripts/hitung_ulang.js",
+    "test:connection": "node scripts/test_connection.js"
+  },
+  "keywords": [
+    "algorithmic-trading",
+    "indodax",
+    "dry-run",
+    "crypto",
+    "upstash-redis",
+    "vercel"
+  ],
+  "author": "Raihan Firdaus Hadi Saputra",
+  "license": "MIT",
+  "dependencies": {
+    "@upstash/redis": "^1.34.4"
+  }
+}
