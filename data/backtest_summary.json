@@ -1,0 +1,20 @@
+{
+  "initialBalance": 100000000,
+  "finalEquity": 186690900.89915374,
+  "totalReturnPct": 86.69090089915375,
+  "cagrPct": 23.310684942915906,
+  "maxDrawdownPct": 23.067934726192448,
+  "totalTrades": 323,
+  "winningTrades": 122,
+  "losingTrades": 201,
+  "winRate": 37.77089783281733,
+  "profitFactor": 1.3901317958950525,
+  "avgWinIdr": 2531968.599840724,
+  "avgLossIdr": 1105518.7476687292,
+  "totalFeeIdr": 77328255.02923849,
+  "totalSpreadSlippageIdr": 35185922.16905063,
+  "totalCostIdr": 112514177.19828913,
+  "costSharePct": 36.424122879815805,
+  "btcBenchmarkReturnPct": 137.08500055500645,
+  "periodYears": 2.9793520419803787
+}
