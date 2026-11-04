@@ -1,0 +1,22 @@
+name: Hourly Trading Bot Tick
+
+on:
+  schedule:
+    # Berjalan tiap jam di menit ke-7 (menghindari antrean menit ke-0 sesuai panduan UAS)
+    - cron: '7 * * * *'
+  workflow_dispatch: # Memungkinkan trigger manual via UI GitHub Actions
+
+jobs:
+  trigger-tick:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Vercel Bot Tick Endpoint
+        run: |
+          echo "Triggering HAN WAY Bot Tick at $(date -u)..."
+          if [ -z "${{ secrets.VERCEL_APP_URL }}" ]; then
+            echo "VERCEL_APP_URL belum di-set di GitHub Secrets. Melewati trigger live."
+            exit 0
+          fi
+          curl -s -X GET "${{ secrets.VERCEL_APP_URL }}/api/tick" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json"
