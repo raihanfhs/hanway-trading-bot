@@ -16,3 +16,17 @@ Backtest 3 tahun memakai data Indodax nyata. Strategi dirancang dengan melihat d
 
 ## Keterbatasan diketahui
 Win rate backtest 37,2% dan MDD -52,96%. Penyebab utama: 184 dari 285 trade keluar via trailing stop 6% (rezim BEAR). Tidak diperbaiki setelah freeze demi menjaga integritas.
+
+## Uji perbaikan sebelum freeze asli (9 Nov 2026, in-sample)
+Dua varian diuji pada backtest 3 tahun yang sama. Keduanya lebih buruk, sehingga strategi TIDAK diubah:
+
+| Varian | Return | MDD | Win Rate | Profit Factor |
+|---|---|---|---|---|
+| Asli (dipakai) | +52,89% | -52,96% | 37,2% | 1,10 |
+| A: stop di-lock saat entry (tanpa stop 6% di BEAR) | -16,77% | -63,30% | 41,8% | 0,97 |
+| B: A + filter entry hanya r168 > 0 | -20,46% | -64,82% | 43,0% | 0,96 |
+
+Kesimpulan: win rate ~37% dibiarkan apa adanya dan dibahas di refleksi. Stop 6% saat BEAR justru berfungsi menahan kerugian.
+
+## Freeze asli
+Freeze dibuat pada commit dengan tanggal nyata (lihat tag v1.1.0-freeze). Bot live berjalan di https://hanway-trading-bot.vercel.app sejak 9 Nov 2026 ~15.10 WIB, state Redis dikosongkan sebelum mulai (data replay dihapus). Log replay lama di folder data/ berstatus simulasi historis.
