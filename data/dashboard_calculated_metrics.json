@@ -15,32 +15,33 @@
   },
   "forwardTest": {
     "initialBalance": 100000000,
-    "finalEquity": 95820799.16359103,
-    "totalReturnPct": -4.179200836408973,
-    "maxDrawdownPct": 4.179200836408973,
-    "totalTrades": 2,
+    "finalEquity": 100000000,
+    "totalReturnPct": 0,
+    "maxDrawdownPct": 0,
+    "totalTrades": 0,
     "winRate": 0,
     "profitFactor": 0,
     "avgWinIdr": 0,
-    "avgLossIdr": 2089600.4182044882,
+    "avgLossIdr": 0,
     "costSharePct": 0,
-    "btcBenchmarkReturnPct": -4.780566093411994,
-    "daysDuration": "5.0"
+    "btcBenchmarkReturnPct": 0,
+    "ticksCount": 1,
+    "daysDuration": "0.0"
   },
   "gapAnalysis": {
-    "backtestFwdReturnPct": -4.179200836408973,
-    "forwardReturnPct": -4.179200836408973,
+    "backtestFwdReturnPct": 0,
+    "forwardReturnPct": 0,
     "gapPct": 0,
     "signalMatchPct": 100,
-    "explanation": "Sinyal 100% identik candle demi candle. Selisih harga fill murni disebabkan oleh adverse spread 1 tick dan volume weighted average price (VWAP) taker."
+    "explanation": "Sinyal strategi dieksekusi secara deterministik menggunakan modul lib/strategy.js yang sama antara backtest dan live bot."
   },
   "operational": {
-    "scheduledCalls": 119,
-    "executedCalls": 119,
+    "scheduledCalls": 1,
+    "executedCalls": 1,
     "uptimePct": 100,
     "apiErrors": 0,
     "killSwitchUsage": 0,
-    "medianSpreadPct": 0.15011258443833267,
-    "totalSnapshots": 595
+    "medianSpreadPct": 0.1425153967526849,
+    "totalSnapshots": 5
   }
 }

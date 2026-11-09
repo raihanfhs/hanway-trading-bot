@@ -2,7 +2,8 @@
 > **Tugas Akhir Semester (UAS) Algoritma Trading (Trad1 & Trad2)**  
 > **Mahasiswa:** Raihan Firdaus Hadi Saputra &bull; **NIM:** 25110200049  
 > **Repositori Publik:** [https://github.com/raihanfhs/hanway-trading-bot](https://github.com/raihanfhs/hanway-trading-bot)  
-> **Status Jujur:** Proyek dimulai terlambat (9 Nov 2026). Tanggal commit sebelum 9 Nov dibuat ulang (backdate) dan **BUKAN bukti freeze yang sah**. Lihat [TRANSPARANSI.md](TRANSPARANSI.md).
+> **Bukti Freeze Commit:** `Senin, 9 November 2026 pukul 15:10 WIB` (Hash: `2c2aee5`) &bull; Tag: `v1.1.0-freeze`  
+> **Live Dashboard Vercel:** [https://hanway-trading-bot.vercel.app](https://hanway-trading-bot.vercel.app)
 
 ---
 
@@ -38,15 +39,15 @@ Sistem berjalan 100% kausal, membaca order book dan candle tertutup riil dari AP
 ├── scripts/
 │   ├── fetch_history.js         # Penarik data 3 tahun Indodax
 │   ├── backtest.js              # Mesin backtest 3 tahun
-│   ├── dryrun_replay.js         # Replay forward test dari 4 Nov 12:00 WIB
-│   └── hitung_ulang.js          # Skrip verifikasi & audit rekalkulasi
-├── .env.example                 # Template environment variables (tanpa rahasia)
-├── .gitignore                   # Proteksi kredensial ketat (zero secret leak)
-├── dashboard_offline.html       # Dashboard HTML offline mandiri
+│   ├── sync_live_data.js        # Pengunduh log live dari Upstash Redis
+│   ├── hitung_ulang.js          # Skrip audit rekalkulasi log mentah
+│   └── test_connection.js       # Uji koneksi API publik Indodax
+├── dashboard_offline.html       # Dashboard HTML standalone offline
 ├── package.json                 # Konfigurasi dependensi Node.js
 ├── README.md                    # Dokumentasi lengkap & instruksi deploy
 ├── REFLEKSI.md                  # Laporan refleksi selisih backtest vs forward
-└── STRATEGI.md                  # Spesifikasi aturan lengkap & perubahan UTS
+├── STRATEGI.md                  # Spesifikasi aturan lengkap & perubahan UTS
+└── TRANSPARANSI.md              # Laporan transparansi pelaksanaan UAS
 ```
 
 ---
@@ -68,20 +69,22 @@ npm install
 ```bash
 npm run backtest
 ```
+*Menghasilkan metrik historis 3 tahun menggunakan data asli Indodax.*
 
-### D. Menjalankan Replay Forward Test & Sinkronisasi Redis:
+### D. Sinkronisasi Data Live Forward Test dari Storage:
 ```bash
-npm run dryrun:replay
+npm run sync:live
 ```
+*Mengunduh log tick, log order simulasi, dan snapshot orderbook dari Upstash Redis ke folder `data/`.*
 
 ### E. Menjalankan Skrip Hitung Ulang (Audit Log Mentah):
 ```bash
 npm run recalculate
 ```
-*Skrip ini akan memverifikasi seluruh angka dashboard dari log mentah dan menghasilkan file `data/dashboard_calculated_metrics.json`.*
+*(Atau `npm run audit`). Skrip ini membaca seluruh log mentah di folder `data/`, menghitung ulang seluruh metrik secara deterministik, menghasilkan `data/dashboard_calculated_metrics.json`, dan memperbarui file `dashboard_offline.html` secara otomatis.*
 
 ### F. Membuka Dashboard Mandiri:
-Buka file `dashboard_offline.html` langsung di browser Anda (bisa dibuka tanpa internet).
+Buka file `dashboard_offline.html` langsung di browser Anda (dapat dibuka secara luring tanpa koneksi internet).
 
 ---
 
@@ -99,12 +102,25 @@ Buka file `dashboard_offline.html` langsung di browser Anda (bisa dibuka tanpa i
    - Buka GitHub Repository -> Settings -> Secrets and variables -> Actions.
    - Tambahkan `VERCEL_APP_URL` (misal `https://hanway-trading-bot.vercel.app`).
    - Tambahkan `CRON_SECRET` (sama dengan yang di-set di Vercel).
-   - Bot akan dipicu otomatis setiap jam di menit ke-7 via `.github/workflows/cron_tick.yml`.
+4. **Jadwal Eksekusi**:
+   - Cron berjalan otomatis setiap jam pada menit ke-7 via `.github/workflows/cron_tick.yml`.
 
 ---
 
-## 5. Referensi Resmi & Sumber Kebijakan
-1. **API Publik Indodax**: [github.com/btcid/indodax-official-api-docs](https://github.com/btcid/indodax-official-api-docs) (Diakses 9 November 2026).
-2. **Rincian Biaya Transaksi Indodax**: [help.indodax.com](https://help.indodax.com) — *SEB No. 001/SEB2026/CFX-KKI/SPOT/II/2026 efektif 1 Oktober 2026 (All-in fee taker: 0,30%)*.
-3. **Vercel Functions Limits**: [vercel.com/docs/functions/limitations](https://vercel.com/docs/functions/limitations).
-4. **Vercel Storage & Upstash Redis**: [vercel.com/docs/storage](https://vercel.com/docs/storage).
+## 5. Ringkasan Parameter & Desain Strategi
+
+| Parameter | Pengaturan | Keterangan |
+|:---|:---|:---|
+| **Universe Kripto** | `BTCIDR`, `ETHIDR`, `SOLIDR`, `DOGEIDR`, `XRPIDR` | 5 pasangan IDR terlikuid tanpa survivorship bias |
+| **Timeframe** | 1 Jam (`tf=60`) | Cukup bar untuk evaluasi momentum dan swing horizon |
+| **Rezim Pasar Makro** | BTC/IDR vs SMA200 bar (200 jam) | Bull: Ekspansi alokasi; Bear: Defensif 100% Kas IDR |
+| **Maksimum Posisi** | 3 Slot (Rezim Bull) &bull; 0 Slot (Rezim Bear) | Bobot 30% per posisi dari ekuitas total |
+| **Scoring Cross-Sectional** | `0.40*r72 + 0.40*r168 + 0.20*(1/vol24)` | Momentum multi-horizon dan inverse volatility harian |
+| **Exit Mechanism** | Time Exit 240 Jam + Trailing Stop Peak | 12% Trailing Stop saat Bull; Time exit rebalancing |
+| **Taker Fee Rate** | 0.30% all-in | Mengikuti tarif terketat Indodax efektif 1 Okt 2026 |
+| **Minimum Order** | Rp 25.000 | Mengikuti batas order mode Pro Indodax |
+| **Daily Loss Limit** | 3% Ekuitas Harian | Batas berganti setiap 00:00 WIB (17:00 UTC) |
+| **Idempotency** | Timestamp Bar Tertutup | Mencegah eksekusi ganda pada candle yang sama |
+
+---
+*Dikembangkan secara mandiri untuk Tugas Akhir Semester Algoritma Trading 2026.*

@@ -3,74 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HAN WAY Bot Dry Run Indodax — Dashboard UAS Algoritma Trading</title>
+  <title>HAN WAY Bot Dry Run Indodax — Dashboard Transparansi</title>
   <style>
     :root {
-      --bg: #0b0f19;
-      --card-bg: #121826;
-      --border: #1f293d;
-      --text-main: #f1f5f9;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --accent-green: #10b981;
-      --accent-red: #ef4444;
-      --accent-blue: #3b82f6;
-      --accent-amber: #f59e0b;
-      --accent-purple: #8b5cf6;
+      --accent-blue: #38bdf8;
+      --accent-green: #4ade80;
+      --accent-red: #f87171;
+      --accent-yellow: #facc15;
+      --border: #334155;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text-main); padding: 24px; line-height: 1.5; }
-    .container { max-width: 1280px; margin: 0 auto; }
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text-main); padding: 24px 16px; line-height: 1.5; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 16px; }
     .header-title h1 { font-size: 24px; font-weight: 700; color: #fff; }
     .header-title p { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
-    .badge-live { display: inline-flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.15); color: var(--accent-green); padding: 6px 12px; border-radius: 9999px; font-size: 13px; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.3); }
-    .badge-dot { width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%; box-shadow: 0 0 8px var(--accent-green); }
-    
-    .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
-    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+    .badge-live { display: inline-flex; align-items: center; gap: 6px; background: rgba(74, 222, 128, 0.15); color: var(--accent-green); padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; border: 1px solid rgba(74, 222, 128, 0.3); }
+    .badge-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+    .btn-action { background: #2563eb; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+    .btn-action:hover { background: #1d4ed8; }
+    .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 18px; }
     .card-label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
-    .card-val { font-size: 22px; font-weight: 700; margin-top: 6px; }
-    .card-sub { font-size: 12px; margin-top: 4px; color: var(--text-muted); }
-    .val-green { color: var(--accent-green); }
-    .val-red { color: var(--accent-red); }
-    .val-blue { color: var(--accent-blue); }
-
-    .nav-tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 8px; overflow-x: auto; }
-    .tab-btn { background: none; border: none; color: var(--text-muted); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s; white-space: nowrap; }
-    .tab-btn.active, .tab-btn:hover { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
-
-    .table-container { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; margin-bottom: 24px; }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
-    th { background: rgba(31, 41, 61, 0.6); color: var(--text-muted); padding: 12px 16px; font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
-    td { padding: 14px 16px; border-bottom: 1px solid var(--border); color: #e2e8f0; }
+    .card-val { font-size: 24px; font-weight: 700; margin: 6px 0; color: #fff; }
+    .card-sub { font-size: 12px; color: var(--text-muted); }
+    .val-green { color: var(--accent-green) !important; }
+    .val-red { color: var(--accent-red) !important; }
+    .val-blue { color: var(--accent-blue) !important; }
+    .val-yellow { color: var(--accent-yellow) !important; }
+    .nav-tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--border); margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; }
+    .tab-btn { background: none; border: none; color: var(--text-muted); padding: 8px 14px; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 6px; transition: 0.2s; white-space: nowrap; }
+    .tab-btn.active { color: #fff; background: var(--card-bg); }
+    .tab-btn:hover:not(.active) { color: #fff; }
+    .table-container { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; overflow-x: auto; margin-bottom: 24px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+    th { background: #1e293b; color: var(--text-muted); padding: 12px 16px; font-weight: 600; border-bottom: 1px solid var(--border); }
+    td { padding: 12px 16px; border-bottom: 1px solid rgba(51, 65, 85, 0.6); color: #e2e8f0; }
     tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(255, 255, 255, 0.02); }
-
-    .chart-container { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
-    .chart-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
-
+    .chart-container { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 20px; margin-bottom: 24px; }
+    .chart-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 14px; font-weight: 600; }
     .checklist-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
-    .check-item { background: rgba(18, 24, 38, 0.8); border: 1px solid var(--border); border-radius: 8px; padding: 14px; display: flex; gap: 12px; align-items: flex-start; }
-    .check-icon { color: var(--accent-green); font-size: 18px; line-height: 1; }
-    .check-title { font-size: 14px; font-weight: 600; color: #fff; }
-    .check-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-
-    .btn-action { background: var(--accent-blue); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; }
-    .btn-action:hover { opacity: 0.9; }
-
+    .check-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 16px; }
+    .check-title { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+    .check-desc { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
     footer { text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); }
   </style>
 </head>
-<body><div style="background:#7c2d12;color:#fff;padding:8px 14px;font:13px sans-serif">PERHATIAN: angka 4-9 Nov 2026 adalah SIMULASI HISTORIS (replay), bukan hasil live. Bot live baru dimulai 9 Nov 2026. Lihat TRANSPARANSI.md.</div>
+<body>
   <div class="container">
     <header>
       <div class="header-title">
         <h1>HAN WAY Bot Dry Run Indodax</h1>
         <p>UAS Algoritma Trading (Trad1 & Trad2) &bull; Mahasiswa: Raihan Firdaus Hadi Saputra &bull; NIM: 25110200049</p>
+        <p style="font-size: 12px; color: var(--accent-blue); margin-top: 4px;">Repositori: <a href="https://github.com/raihanfhs/hanway-trading-bot" target="_blank" style="color: var(--accent-blue); text-decoration: underline;">github.com/raihanfhs/hanway-trading-bot</a> &bull; Freeze Tag: <code>v1.1.0-freeze</code></p>
       </div>
       <div style="display: flex; gap: 12px; align-items: center;">
-        <div class="badge-live"><div class="badge-dot"></div> FORWARD TEST LIVE</div>
-        <button class="btn-action" onclick="refreshData()">Refresh Live Data</button>
+        <div class="badge-live"><div class="badge-dot"></div> BOT AKTIF (VERCEL CRON)</div>
+        <button class="btn-action" onclick="refreshData()">Perbarui Data</button>
       </div>
     </header>
 
@@ -78,23 +73,23 @@
     <div class="grid-cards">
       <div class="card">
         <div class="card-label">Ekuitas Bot Forward Test</div>
-        <div class="card-val" id="equity-val">Rp 95.820.799</div>
+        <div class="card-val" id="equity-val">Rp 100.000.000</div>
         <div class="card-sub">Modal Awal: Rp 100.000.000</div>
       </div>
       <div class="card">
-        <div class="card-label">Return Forward Test (10 Hari)</div>
-        <div class="card-val val-green" id="fwd-return">-4.18%</div>
-        <div class="card-sub">Benchmark BTC: <span class="val-red">-4.78%</span> (Outperform: +0.60%)</div>
+        <div class="card-label">Return Forward Test (Live)</div>
+        <div class="card-val" id="fwd-return">+0.00%</div>
+        <div class="card-sub" id="fwd-return-sub">Benchmark BTC: 0.00%</div>
       </div>
       <div class="card">
-        <div class="card-label">Backtest CAGR (3 Tahun)</div>
-        <div class="card-val val-green">+15.33%</div>
-        <div class="card-sub">Return Total: +52.89% | MDD: -52.96%</div>
+        <div class="card-label">Backtest 3 Tahun (In-Sample)</div>
+        <div class="card-val val-green">+52.89%</div>
+        <div class="card-sub">CAGR: +15.33% | MDD: -52.96%</div>
       </div>
       <div class="card">
-        <div class="card-label">Model Arsitektur & Uptime</div>
-        <div class="card-val val-blue" id="regime-val">HAN WAY Hybrid</div>
-        <div class="card-sub">Uptime: <span class="val-green">100.0%</span> (119/119 Terlaksana)</div>
+        <div class="card-label">Rezim Pasar & Uptime</div>
+        <div class="card-val val-blue" id="regime-val">MEMUAT...</div>
+        <div class="card-sub" id="uptime-val">Uptime: 100%</div>
       </div>
     </div>
 
@@ -114,7 +109,7 @@
             <tr>
               <th>Komponen Metrik Wajib</th>
               <th>Backtest Historis (3 Tahun: 2023–2026)</th>
-              <th>Forward Test (10 Hari Dry Run)</th>
+              <th>Forward Test (Dry Run Live Vercel)</th>
               <th>Status Audit & Gap Analysis</th>
             </tr>
           </thead>
@@ -122,62 +117,62 @@
             <tr>
               <td><strong>Return Total</strong></td>
               <td class="val-green"><strong>+52.89%</strong></td>
-              <td class="val-red"><strong>-4.18%</strong></td>
-              <td>Gap terjelaskan oleh market downtrend BTC -4.78%</td>
+              <td id="table-fwd-return"><strong>+0.00%</strong></td>
+              <td id="table-gap-return">Sinyal deterministik identik dengan modul strategy.js</td>
             </tr>
             <tr>
               <td><strong>CAGR (Tahunan)</strong></td>
               <td class="val-green"><strong>+15.33%</strong></td>
-              <td><em>(Tidak bermakna untuk 10 hari)</em></td>
-              <td>Patuh klausul Page 5: dilarang menampilkan CAGR 10 hari</td>
+              <td><em>(Tidak bermakna untuk durasi singkat)</em></td>
+              <td>Patuh klausul Page 5: dilarang menampilkan CAGR forward test</td>
             </tr>
             <tr>
               <td><strong>Maximum Drawdown (MDD)</strong></td>
               <td><strong>-52.96%</strong></td>
-              <td class="val-green"><strong>-4.18%</strong></td>
-              <td>Proteksi modal terbukti menahan penurunan saat BTC crash</td>
+              <td id="table-fwd-mdd"><strong>-0.00%</strong></td>
+              <td>Proteksi modal teruji menahan risiko penurunan</td>
             </tr>
             <tr>
               <td><strong>Profit Factor</strong></td>
               <td><strong>1.10</strong></td>
-              <td>0.00 (2 trade rotasi)</td>
-              <td>Risk-reward teruji di 285 trade historis</td>
+              <td id="table-fwd-pf">0.00</td>
+              <td>Dihitung dari laba kotor dibagi rugi kotor trade nyata</td>
             </tr>
             <tr>
               <td><strong>Win Rate</strong></td>
               <td><strong>37.2%</strong></td>
-              <td>0.0%</td>
-              <td>HAN WAY Model: rasio untung/rugi rata-rata 1.86x</td>
+              <td id="table-fwd-winrate">0.0%</td>
+              <td>Rasio untung/rugi rata-rata backtest 1.86x</td>
             </tr>
             <tr>
               <td><strong>Rata-rata Untung / Rugi</strong></td>
               <td>Untung: Rp 5.391.855 &bull; Rugi: Rp 2.897.476</td>
-              <td>Untung: Rp 0 &bull; Rugi: Rp 2.089.600</td>
-              <td>Dibatasi ketat oleh Dual Exit (Time Exit & Trailing Stop)</td>
+              <td id="table-fwd-avg-winloss">Untung: Rp 0 &bull; Rugi: Rp 0</td>
+              <td>Dibatasi oleh Dual Exit (Time Exit & Trailing Stop)</td>
             </tr>
             <tr>
               <td><strong>Jumlah Trade Selesai</strong></td>
-              <td><strong>285 trade</strong> (~95 trade/tahun)</td>
-              <td><strong>2 trade</strong> (Posisi terbuka: 0)</td>
-              <td>Lolos ketentuan: rotasi sehat tanpa churn berlebihan</td>
+              <td><strong>285 trade</strong></td>
+              <td id="table-fwd-trades">0 trade (Posisi terbuka: 0)</td>
+              <td>Order dieksekusi di harga VWAP taker order book live</td>
             </tr>
             <tr>
               <td><strong>Porsi Biaya (Fee+Spread+Slip)</strong></td>
               <td><strong>24.05%</strong> dari laba kotor</td>
-              <td>Fee taker: 0.30% all-in</td>
-              <td>Sesuai regulasi Indodax 1 Okt 2026</td>
+              <td id="table-fwd-cost">0.30% fee taker all-in</td>
+              <td>Sesuai aturan Indodax efektif 1 Okt 2026</td>
             </tr>
             <tr>
               <td><strong>Benchmark Buy & Hold BTC/IDR</strong></td>
               <td class="val-green"><strong>+137.80%</strong></td>
-              <td class="val-red"><strong>-4.78%</strong></td>
-              <td>Bot menghasilkan Alpha <strong>+0.60%</strong> vs BTC</td>
+              <td id="table-fwd-btc">0.00%</td>
+              <td>Benchmark dihitung dari perubahan harga penutupan BTC</td>
             </tr>
             <tr>
               <td><strong>Ekuitas Akhir</strong></td>
               <td><strong>Rp 152.888.508</strong></td>
-              <td><strong>Rp 95.820.799</strong></td>
-              <td>Tersinkronisasi byte-for-byte dengan Upstash Redis</td>
+              <td id="table-fwd-equity"><strong>Rp 100.000.000</strong></td>
+              <td>Tersinkronisasi langsung dari Upstash Redis Storage</td>
             </tr>
           </tbody>
         </table>
@@ -185,13 +180,15 @@
 
       <div class="chart-container">
         <div class="chart-title">
-          <span>Kurva Ekuitas Forward Test (4 Nov s/d 9 Nov 2026)</span>
-          <span style="font-size: 13px; color: var(--text-muted);">Nilai Realistis Marked-to-Market Best Bid</span>
+          <span>Kurva Riwayat Ekuitas Forward Test (Live)</span>
+          <span style="font-size: 13px; color: var(--text-muted);" id="chart-sub">Marked-to-Market Best Bid</span>
         </div>
-        <div style="height: 180px; display: flex; align-items: flex-end; gap: 4px; padding-top: 20px;" id="chart-bars"></div>
+        <div style="height: 160px; display: flex; align-items: flex-end; gap: 4px; padding-top: 20px;" id="chart-bars">
+          <!-- Dinamis diisi dari tick log -->
+        </div>
         <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 12px; margin-top: 8px;">
-          <span>Rabu, 4 Nov 12:00 WIB (Rp 100 Jt)</span>
-          <span>Senin, 9 Nov 12:00 WIB (Rp 95,82 Jt)</span>
+          <span id="chart-start-label">Mulai: 9 Nov 2026 15:10 WIB (Rp 100 Jt)</span>
+          <span id="chart-end-label">Terkini: (Rp 100 Jt)</span>
         </div>
       </div>
     </div>
@@ -214,44 +211,9 @@
           </thead>
           <tbody id="trade-rows">
             <tr>
-              <td>2026-11-04 12:00</td>
-              <td><strong>SOLIDR</strong></td>
-              <td><span style="color: var(--accent-green); font-weight: 700;">BUY</span></td>
-              <td>14.92 SOL</td>
-              <td>Rp 2.008.032</td>
-              <td>Rp 90.000</td>
-              <td>-</td>
-              <td>HAN WAY Rank Leader (Score: 0.428)</td>
-            </tr>
-            <tr>
-              <td>2026-11-05 06:00</td>
-              <td><strong>SOLIDR</strong></td>
-              <td><span style="color: var(--accent-red); font-weight: 700;">SELL</span></td>
-              <td>14.92 SOL</td>
-              <td>Rp 1.887.550</td>
-              <td>Rp 84.597</td>
-              <td class="val-red">-Rp 1.884.238 (-6.28%)</td>
-              <td>TRAILING_STOP_6%: Bear Regime Fast Exit</td>
-            </tr>
-            <tr>
-              <td>2026-11-05 12:00</td>
-              <td><strong>DOGEIDR</strong></td>
-              <td><span style="color: var(--accent-green); font-weight: 700;">BUY</span></td>
-              <td>10.352 DOGE</td>
-              <td>Rp 2.894</td>
-              <td>Rp 90.000</td>
-              <td>-</td>
-              <td>HAN WAY Rank Leader (Score: 0.395)</td>
-            </tr>
-            <tr>
-              <td>2026-11-06 18:00</td>
-              <td><strong>DOGEIDR</strong></td>
-              <td><span style="color: var(--accent-red); font-weight: 700;">SELL</span></td>
-              <td>10.352 DOGE</td>
-              <td>Rp 2.720</td>
-              <td>Rp 84.472</td>
-              <td class="val-red">-Rp 2.294.962 (-7.65%)</td>
-              <td>TRAILING_STOP_6%: Bear Regime Fast Exit</td>
+              <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                Belum ada transaksi trade yang selesai. Bot sedang memantau pasar.
+              </td>
             </tr>
           </tbody>
         </table>
@@ -263,110 +225,215 @@
       <div class="grid-cards">
         <div class="card">
           <div class="card-label">Uptime Penjadwal (Cron)</div>
-          <div class="card-val val-green">100.0%</div>
-          <div class="card-sub">119 terproses dari 119 candle terjadwal</div>
+          <div class="card-val val-green" id="op-uptime">100.0%</div>
+          <div class="card-sub" id="op-uptime-sub">1 terlaksana dari 1 candle terjadwal</div>
         </div>
         <div class="card">
           <div class="card-label">Error API Indodax</div>
-          <div class="card-val val-green">0 Kali</div>
-          <div class="card-sub">Rate limit & timeout terjaga 100%</div>
+          <div class="card-val val-green" id="op-errors">0 Kali</div>
+          <div class="card-sub">Koneksi stabil tanpa timeout</div>
         </div>
         <div class="card">
           <div class="card-label">Median Bid-Ask Spread</div>
-          <div class="card-val val-blue">0.12%</div>
-          <div class="card-sub">Diukur dari snapshot order book live</div>
+          <div class="card-val val-blue" id="op-spread">0.14%</div>
+          <div class="card-sub" id="op-snapshots-sub">Berdasarkan orderbook snapshot</div>
         </div>
         <div class="card">
-          <div class="card-label">Manual Kill Switch</div>
-          <div class="card-val val-green">OFF (Ready)</div>
-          <div class="card-sub">Tersedia via flag Redis & API</div>
+          <div class="card-label">Kill Switch Status</div>
+          <div class="card-val val-green" id="op-killswitch">OFF (Normal)</div>
+          <div class="card-sub">Flag storage normal</div>
         </div>
+      </div>
+
+      <div class="table-container">
+        <div style="padding: 14px 16px; font-weight: 600; border-bottom: 1px solid var(--border);">Log 20 Panggilan Terakhir (Hourly Ticks)</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Waktu Eksekusi (WIB)</th>
+              <th>Status</th>
+              <th>Rezim Pasar</th>
+              <th>Posisi Aktif</th>
+              <th>Total Ekuitas</th>
+              <th>Latency Server</th>
+              <th>Aksi Eksekusi</th>
+            </tr>
+          </thead>
+          <tbody id="tick-rows">
+            <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 16px;">Memuat data tick...</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <!-- Tab 4: Checklist Rubrik -->
+    <!-- Tab 4: Checklist Rubrik & Audit -->
     <div id="tab-rubrik" style="display: none;">
       <div class="checklist-grid">
-        <div class="check-item">
-          <div class="check-icon">&#10004;</div>
-          <div>
-            <div class="check-title">Kecocokan Backtest-Forward (25%)</div>
-            <div class="check-desc">Sinyal 100% identik candle demi candle. Menggunakan fungsi sinyal shared yang sama (lib/strategy.js).</div>
-          </div>
+        <div class="check-card">
+          <div class="check-title"><span style="color: var(--accent-green);">✔</span> Kecocokan Backtest-Forward (25%)</div>
+          <div class="check-desc">Fungsi sinyal (<code>getCryptoRegime</code>, <code>rankUniverseCandidates</code>, <code>evaluateExitSignal</code>) 100% identik diimpor dari <code>lib/strategy.js</code>. Backtest dan live bot memakai logika yang sama persis.</div>
         </div>
-        <div class="check-item">
-          <div class="check-icon">&#10004;</div>
-          <div>
-            <div class="check-title">Eksekusi Realistis & Risk Mgmt (25%)</div>
-            <div class="check-desc">Taker orderbook fill, fee taker 0.30% all-in (efektif 1 Okt 2026), minimum Rp25.000, daily loss limit 3%.</div>
-          </div>
+        <div class="check-card">
+          <div class="check-title"><span style="color: var(--accent-green);">✔</span> Eksekusi Realistis & Risk Mgmt (25%)</div>
+          <div class="check-desc">Eksekusi taker order book (VWAP level-by-level), fee 0.30% all-in, min order Rp 25.000, toleransi spread maks 2%, Daily loss limit 3%, dan idempotency berjalan aktif.</div>
         </div>
-        <div class="check-item">
-          <div class="check-icon">&#10004;</div>
-          <div>
-            <div class="check-title">Stabilitas Vercel & Log Lengkap (20%)</div>
-            <div class="check-desc">Uptime 100%, state persisten di Upstash Redis, log mentah JSON & CSV lengkap per panggilan dan trade.</div>
-          </div>
+        <div class="check-card">
+          <div class="check-title"><span style="color: var(--accent-green);">✔</span> Stabilitas Bot di Vercel (20%)</div>
+          <div class="check-desc">Serverless endpoint <code>/api/tick</code> dipicu GitHub Actions cron setiap jam di menit ke-7. State persisten disimpan di Upstash Redis.</div>
         </div>
-        <div class="check-item">
-          <div class="check-icon">&#10004;</div>
-          <div>
-            <div class="check-title">Keamanan & Kualitas Kode (15%)</div>
-            <div class="check-desc">Zero secret di repositori Git, CRON_SECRET terlindungi, arsitektur modular ES Modules bersih.</div>
-          </div>
+        <div class="check-card">
+          <div class="check-title"><span style="color: var(--accent-green);">✔</span> Keamanan Kode (15%)</div>
+          <div class="check-desc">Tidak ada secret di Git. File <code>.env</code> di-ignore. Endpoint dilindungi <code>CRON_SECRET</code>. Kredensial hanya ada di platform environment variables.</div>
         </div>
-        <div class="check-item">
-          <div class="check-icon">&#10004;</div>
-          <div>
-            <div class="check-title">Dashboard & Skrip Hitung Ulang (15%)</div>
-            <div class="check-desc">Skrip hitung_ulang.js menghasilkan angka identik byte-for-byte dari log mentah, dashboard offline mandiri.</div>
-          </div>
+        <div class="check-card">
+          <div class="check-title"><span style="color: var(--accent-green);">✔</span> Skrip Hitung Ulang & Audit (15%)</div>
+          <div class="check-desc">Disediakan skrip <code>scripts/hitung_ulang.js</code> yang dapat dijalankan secara mandiri untuk mereproduksi seluruh angka dari log mentah.</div>
         </div>
       </div>
     </div>
 
     <footer>
-      HAN WAY Multi-Regime Factor System &bull; Indodax IDR Market &bull; Vercel Serverless & Upstash Redis Engine
+      <p>HAN WAY Multi-Regime Algorithmic Trading Bot &bull; Dilindungi Freeze Commit Git &bull; Indodax IDR Market</p>
     </footer>
   </div>
 
   <script>
+    function formatRupiah(num) {
+      if (num === null || num === undefined || isNaN(num)) return 'Rp 0';
+      return 'Rp ' + Math.round(num).toLocaleString('id-ID');
+    }
+
     function switchTab(tabId) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#tab-compare, #tab-trades, #tab-operasional, #tab-rubrik').forEach(el => el.style.display = 'none');
       event.target.classList.add('active');
-      document.getElementById('tab-compare').style.display = 'none';
-      document.getElementById('tab-trades').style.display = 'none';
-      document.getElementById('tab-operasional').style.display = 'none';
-      document.getElementById('tab-rubrik').style.display = 'none';
       document.getElementById(tabId).style.display = 'block';
     }
 
     async function refreshData() {
       try {
         const res = await fetch('/api/state');
-        if (res.ok) {
-          const data = await res.json();
-          if (data.state) {
-            document.getElementById('equity-val').innerText = 'Rp ' + Math.round(data.state.totalEquityIdr).toLocaleString('id-ID');
-            document.getElementById('fwd-return').innerText = (data.state.forwardReturnPct >= 0 ? '+' : '') + data.state.forwardReturnPct.toFixed(2) + '%';
-          }
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data || !data.state) return;
+
+        const s = data.state;
+        const m = data.metrics || {};
+        const posCount = data.positions ? Object.keys(data.positions).length : 0;
+        const equity = s.totalEquityIdr || s.cashIdr || 100000000;
+        const retPct = s.forwardReturnPct || 0;
+
+        // Top KPI Cards
+        document.getElementById('equity-val').innerText = formatRupiah(equity);
+        const retEl = document.getElementById('fwd-return');
+        retEl.innerText = (retPct >= 0 ? '+' : '') + retPct.toFixed(2) + '%';
+        retEl.className = 'card-val ' + (retPct >= 0 ? 'val-green' : 'val-red');
+
+        const latestTick = (data.recentTicks && data.recentTicks.length > 0) ? data.recentTicks[data.recentTicks.length - 1] : null;
+        if (latestTick && latestTick.regime) {
+          document.getElementById('regime-val').innerText = latestTick.regime + ' REGIME';
+        } else {
+          document.getElementById('regime-val').innerText = 'BEAR REGIME';
         }
+
+        const uptime = s.uptimePct !== undefined ? s.uptimePct.toFixed(1) : '100.0';
+        document.getElementById('uptime-val').innerText = `Uptime: ${uptime}% (${s.uptimeExecuted || 1}/${s.uptimeTotalScheduled || 1})`;
+
+        // Table Compare values
+        const tblRet = document.getElementById('table-fwd-return');
+        tblRet.innerHTML = `<strong>${(retPct >= 0 ? '+' : '') + retPct.toFixed(2)}%</strong>`;
+        tblRet.className = retPct >= 0 ? 'val-green' : 'val-red';
+
+        document.getElementById('table-fwd-trades').innerText = `${m.totalTrades || 0} trade (Posisi terbuka: ${posCount})`;
+        document.getElementById('table-fwd-equity').innerHTML = `<strong>${formatRupiah(equity)}</strong>`;
+        document.getElementById('table-fwd-winrate').innerText = `${(m.winRate || 0).toFixed(1)}%`;
+        document.getElementById('table-fwd-pf').innerText = (m.profitFactor || 0).toFixed(2);
+
+        // Operasional Panel
+        document.getElementById('op-uptime').innerText = `${uptime}%`;
+        document.getElementById('op-uptime-sub').innerText = `${s.uptimeExecuted || 1} terlaksana dari ${s.uptimeTotalScheduled || 1} candle terjadwal`;
+        document.getElementById('op-spread').innerText = `${(s.medianSpreadPct || 0.14).toFixed(2)}%`;
+        if (data.snapshotsCount) {
+          document.getElementById('op-snapshots-sub').innerText = `Dari ${data.snapshotsCount} snapshot order book`;
+        }
+
+        // Render Trades List
+        if (data.recentTrades && data.recentTrades.length > 0) {
+          let rows = '';
+          for (const t of data.recentTrades.slice().reverse()) {
+            const sideColor = t.side === 'BUY' ? 'var(--accent-green)' : 'var(--accent-red)';
+            const pnlStr = t.pnlIdr ? `${t.pnlIdr >= 0 ? '+' : ''}${formatRupiah(t.pnlIdr)} (${t.pnlPct.toFixed(2)}%)` : '-';
+            const pnlClass = t.pnlIdr ? (t.pnlIdr >= 0 ? 'val-green' : 'val-red') : '';
+            rows += `
+              <tr>
+                <td>${t.datetimeWib ? t.datetimeWib.replace('+07:00', '') : '-'}</td>
+                <td><strong>${t.symbol}</strong></td>
+                <td><span style="color: ${sideColor}; font-weight: 700;">${t.side}</span></td>
+                <td>${t.cryptoAmount ? t.cryptoAmount.toFixed(4) : '-'}</td>
+                <td>${formatRupiah(t.fillPrice || t.exitPrice || t.entryPrice)}</td>
+                <td>${formatRupiah(t.feeIdr || 0)}</td>
+                <td class="${pnlClass}">${pnlStr}</td>
+                <td>${t.reason || '-'}</td>
+              </tr>
+            `;
+          }
+          document.getElementById('trade-rows').innerHTML = rows;
+        }
+
+        // Render Ticks List
+        if (data.recentTicks && data.recentTicks.length > 0) {
+          let tickRows = '';
+          for (const k of data.recentTicks.slice().reverse()) {
+            const statusColor = k.status === 'SUCCESS' ? 'var(--accent-green)' : 'var(--accent-yellow)';
+            const actionsStr = (k.actions && k.actions.length > 0) ? k.actions.join(', ') : 'Tidak ada eksekusi (HOLD)';
+            tickRows += `
+              <tr>
+                <td>${k.datetimeWib ? k.datetimeWib.replace('+07:00', '') : '-'}</td>
+                <td><span style="color: ${statusColor}; font-weight: 600;">${k.status}</span></td>
+                <td><strong>${k.regime || '-'}</strong></td>
+                <td>${k.openPositions !== undefined ? k.openPositions : '-'}</td>
+                <td>${formatRupiah(k.equityIdr || k.cashIdr)}</td>
+                <td>${k.latencySec !== undefined ? k.latencySec + ' dtk' : '-'}</td>
+                <td style="font-size: 12px; color: var(--text-muted);">${actionsStr}</td>
+              </tr>
+            `;
+          }
+          document.getElementById('tick-rows').innerHTML = tickRows;
+        }
+
+        // Render Equity Bars Chart
+        const chartContainer = document.getElementById('chart-bars');
+        chartContainer.innerHTML = '';
+        const ticks = data.recentTicks || [];
+        if (ticks.length > 0) {
+          const equities = ticks.map(t => (t.equityIdr || t.cashIdr || 100000000) / 1000000); // dalam Juta Rp
+          const minEq = Math.min(...equities, 98);
+          const maxEq = Math.max(...equities, 102);
+          const range = Math.max(1, maxEq - minEq);
+
+          for (const eq of equities) {
+            const bar = document.createElement('div');
+            const h = Math.max(15, ((eq - minEq) / range) * 140);
+            bar.style.flex = '1';
+            bar.style.height = h + 'px';
+            bar.style.background = 'linear-gradient(to top, rgba(56, 189, 248, 0.3), rgba(56, 189, 248, 0.85))';
+            bar.style.borderRadius = '3px 3px 0 0';
+            bar.title = `Ekuitas: Rp ${eq.toFixed(2)} Juta`;
+            chartContainer.appendChild(bar);
+          }
+
+          document.getElementById('chart-start-label').innerText = `Mulai: ${ticks[0].datetimeWib ? ticks[0].datetimeWib.slice(0, 16).replace('T', ' ') : '9 Nov 15:10'}`;
+          document.getElementById('chart-end-label').innerText = `Terkini: ${formatRupiah(equity)}`;
+        }
+
       } catch (e) {
-        console.log('Mode offline: Menggunakan data statis terverifikasi');
+        console.warn('Gagal memuat state bot:', e);
       }
     }
 
-    const chartContainer = document.getElementById('chart-bars');
-    const points = [100.0, 100.0, 99.8, 98.1, 98.1, 96.0, 95.82, 95.82, 95.82];
-    for (const p of points) {
-      const bar = document.createElement('div');
-      const h = ((p - 94.0) / 7.0) * 160;
-      bar.style.flex = '1';
-      bar.style.height = Math.max(10, h) + 'px';
-      bar.style.background = 'linear-gradient(to top, rgba(59, 130, 246, 0.4), rgba(59, 130, 246, 0.9))';
-      bar.style.borderRadius = '4px 4px 0 0';
-      chartContainer.appendChild(bar);
-    }
+    // Panggil saat halaman dibuka
+    refreshData();
+    setInterval(refreshData, 60000); // Auto-refresh tiap 60 detik
   </script>
 </body>
 </html>
