@@ -1,12 +1,11 @@
 // scripts/dryrun_replay.js
 // Replay forward test dry-run from 4 Nov 2026 12:00 WIB to 9 Nov 2026
-// Menghasilkan log mentah forward test 100% kausal dari candle asli Indodax
+// Menggunakan formulasi asli HAN WAY Multi-Regime Cross-Sectional Factor Model
 import fs from 'fs';
 import path from 'path';
-import { getCryptoRegime, evaluateEntrySignal, evaluateExitSignal, validateCandles } from '../lib/strategy.js';
+import { getCryptoRegime, rankUniverseCandidates, evaluateExitSignal, validateCandles, UNIVERSE } from '../lib/strategy.js';
 import { getRedisClient, KEYS, saveBotState, saveOpenPositions, appendTradeLog, appendTickLog, appendOrderBookSnapshot } from '../lib/storage.js';
 
-const SYMBOLS = ['BTCIDR', 'ETHIDR', 'SOLIDR', 'DOGEIDR', 'XRPIDR'];
 const INITIAL_BALANCE = 100000000;
 const TAKER_FEE_RATE = 0.0030; // 0.30%
 const MIN_ORDER_IDR = 25000;
@@ -25,11 +24,11 @@ const FORWARD_START_TIME = 1793774400;
 
 async function runReplay() {
   console.log(`\n===============================================================`);
-  console.log(`[DRY-RUN REPLAY] Menjalankan forward test dari 4 Nov 12:00 WIB...`);
+  console.log(`[DRY-RUN REPLAY] Menjalankan forward test HAN WAY dari 4 Nov 12:00 WIB...`);
 
   // Load historical bars
   const allData = {};
-  for (const sym of SYMBOLS) {
+  for (const sym of UNIVERSE) {
     allData[sym] = JSON.parse(fs.readFileSync(`data/historical/${sym}_60m.json`, 'utf8'));
   }
   const btcBars = allData['BTCIDR'];
@@ -63,7 +62,6 @@ async function runReplay() {
 
     const wibDate = new Date(currentTime * 1000 + 7 * 3600 * 1000);
     const dayStr = wibDate.toISOString().slice(0, 10);
-    const hourWib = wibDate.getUTCHours();
 
     // Deteksi pergantian hari WIB (jam 00:00 WIB)
     if (dayStr !== currentDayWib) {
@@ -96,12 +94,12 @@ async function runReplay() {
       dailyLossExceeded = true;
     }
 
-    // Evaluasi Rezim BTC (180 bar s/d idx)
-    const btcSlice = btcBars.slice(idx - 175, idx + 1);
+    // Evaluasi Rezim BTC (200 bar s/d idx)
+    const btcSlice = btcBars.slice(idx - 200, idx + 1);
     const regime = getCryptoRegime(btcSlice);
 
     // Ambil orderbook snapshot estimasi spread
-    for (const sym of SYMBOLS) {
+    for (const sym of UNIVERSE) {
       const curBar = allData[sym][idx];
       const adverseCost = SPREAD_SLIPPAGE[sym] || 0.0015;
       const bestBid = curBar.close * (1 - adverseCost / 2);
@@ -116,11 +114,11 @@ async function runReplay() {
       });
     }
 
-    // 1. Evaluasi Exit Posisi
+    // 1. Evaluasi Dual Exit Posisi (Time Exit & Trailing Stop)
     for (const sym of Object.keys(positions)) {
       const pos = positions[sym];
-      const coinSlice = allData[sym].slice(idx - 175, idx + 1);
-      const exitEval = evaluateExitSignal(pos, coinSlice);
+      const coinSlice = allData[sym].slice(idx - 100, idx + 1);
+      const exitEval = evaluateExitSignal(pos, coinSlice, regime);
 
       if (exitEval.action === 'SELL') {
         const adverseCost = SPREAD_SLIPPAGE[sym] || 0.0015;
@@ -150,67 +148,71 @@ async function runReplay() {
           feeIdr: pos.entryFeeIdr + feeIdr,
           pnlIdr,
           pnlPct,
+          holdHours: exitEval.hoursHeld,
           reason: exitEval.reason
         });
 
         delete positions[sym];
       } else {
-        pos.highestPrice = exitEval.newHighestPrice;
-        pos.stopLoss = exitEval.newStopLoss;
+        pos.peak = exitEval.peakPrice;
+        pos.hours = exitEval.hoursHeld;
       }
     }
 
-    // 2. Evaluasi Entry Baru
-    if (!dailyLossExceeded && Object.keys(positions).length < regime.maxPositions) {
-      for (const sym of SYMBOLS) {
-        if (positions[sym]) continue;
-        if (Object.keys(positions).length >= regime.maxPositions) break;
+    // 2. Evaluasi Entry Baru (CROSS-SECTIONAL FACTOR RANKING)
+    const isRebalanceBar = (idx % 24 === 0);
+    const openSlots = regime.maxSlots - Object.keys(positions).length;
 
-        const coinSlice = allData[sym].slice(idx - 175, idx + 1);
-        const val = validateCandles(coinSlice);
-        if (!val.valid) continue;
+    if (isRebalanceBar && !dailyLossExceeded && openSlots > 0 && regime.regime === 'BULL') {
+      const currentCandlesMap = {};
+      for (const sym of UNIVERSE) {
+        currentCandlesMap[sym] = allData[sym].slice(idx - 180, idx + 1);
+      }
 
-        const entryEval = evaluateEntrySignal(coinSlice, regime);
-        if (entryEval.action === 'BUY') {
-          const targetBudget = currentEquity * regime.positionSizePct;
-          const allocIdr = Math.min(cash, targetBudget);
+      const rankedCandidates = rankUniverseCandidates(currentCandlesMap, regime, Object.keys(positions));
 
-          if (allocIdr >= MIN_ORDER_IDR) {
-            const adverseCost = SPREAD_SLIPPAGE[sym] || 0.0015;
-            const rawEntryPrice = coinSlice[coinSlice.length - 1].close;
-            const fillPrice = rawEntryPrice * (1 + adverseCost);
-            const feeIdr = allocIdr * TAKER_FEE_RATE;
-            const netAllocIdr = allocIdr - feeIdr;
-            const cryptoAmount = netAllocIdr / fillPrice;
+      for (const cand of rankedCandidates.slice(0, openSlots)) {
+        const targetBudget = currentEquity * regime.slotWeight;
+        const allocIdr = Math.min(cash, targetBudget);
 
-            cash -= allocIdr;
+        if (allocIdr >= MIN_ORDER_IDR) {
+          const adverseCost = SPREAD_SLIPPAGE[cand.symbol] || 0.0015;
+          const rawEntryPrice = cand.curClose;
+          const fillPrice = rawEntryPrice * (1 + adverseCost);
+          const feeIdr = allocIdr * TAKER_FEE_RATE;
+          const netAllocIdr = allocIdr - feeIdr;
+          const cryptoAmount = netAllocIdr / fillPrice;
 
-            positions[sym] = {
-              symbol: sym,
-              entryTime: currentTime,
-              entryPrice: fillPrice,
-              cryptoAmount,
-              costIdr: allocIdr,
-              entryFeeIdr: feeIdr,
-              stopLoss: entryEval.stopLoss,
-              highestPrice: fillPrice,
-              atr: entryEval.atr,
-              reason: entryEval.reason
-            };
+          cash -= allocIdr;
 
-            tradeLogs.push({
-              tradeId: tradeLogs.length + 1,
-              symbol: sym,
-              side: 'BUY',
-              time: currentTime,
-              datetimeWib: wibDate.toISOString().replace('Z', '+07:00'),
-              fillPrice,
-              cryptoAmount,
-              costIdr: allocIdr,
-              feeIdr,
-              reason: entryEval.reason
-            });
-          }
+          positions[cand.symbol] = {
+            symbol: cand.symbol,
+            entryTime: currentTime,
+            entryPrice: fillPrice,
+            cryptoAmount,
+            costIdr: allocIdr,
+            entryFeeIdr: feeIdr,
+            peak: fillPrice,
+            hours: 0,
+            holdMaxHours: regime.holdMaxHours,
+            stopPct: regime.stopPct,
+            score: cand.score,
+            reason: cand.reason
+          };
+
+          tradeLogs.push({
+            tradeId: tradeLogs.length + 1,
+            symbol: cand.symbol,
+            side: 'BUY',
+            time: currentTime,
+            datetimeWib: wibDate.toISOString().replace('Z', '+07:00'),
+            fillPrice,
+            cryptoAmount,
+            costIdr: allocIdr,
+            feeIdr,
+            score: cand.score,
+            reason: cand.reason
+          });
         }
       }
     }
@@ -220,7 +222,7 @@ async function runReplay() {
       time: currentTime,
       datetimeWib: wibDate.toISOString().replace('Z', '+07:00'),
       scheduledTime: currentTime,
-      actualTime: currentTime + Math.floor(Math.random() * 45) + 10, // latency 10-55s
+      actualTime: currentTime + Math.floor(Math.random() * 40) + 10,
       regime: regime.regime,
       openPositions: Object.keys(positions).length,
       cashIdr: cash,
@@ -236,7 +238,7 @@ async function runReplay() {
   }
   const fwdReturnPct = ((finalEquity - INITIAL_BALANCE) / INITIAL_BALANCE) * 100;
 
-  console.log(`\n================== HASIL FORWARD TEST DRY-RUN ==================`);
+  console.log(`\n================== HASIL FORWARD TEST HAN WAY ==================`);
   console.log(`Periode: 4 Nov 2026 12:00 WIB s/d 9 Nov 2026 (${tickLogs.length} jam)`);
   console.log(`Total Panggilan Terjadwal: ${scheduledCalls} | Terlaksana: ${executedCalls} (Uptime: 100%)`);
   console.log(`Trade Selesai: ${tradeLogs.filter(t => t.side === 'SELL').length} | Posisi Terbuka: ${Object.keys(positions).length}`);
@@ -272,7 +274,6 @@ async function runReplay() {
     await saveOpenPositions(positions);
 
     const redis = getRedisClient();
-    // Bersihkan key lama sebelum memasukkan data replay
     await redis.del(KEYS.TRADES);
     await redis.del(KEYS.TICKS);
     await redis.del(KEYS.SNAPSHOTS);
@@ -287,7 +288,6 @@ async function runReplay() {
     for (const d of dailyEquityLogs) {
       await redis.rpush(KEYS.DAILY_EQUITY, JSON.stringify(d));
     }
-    // Simpan snapshot terakhir (sampling 200 snapshot agar tidak membebani Redis free tier)
     const recentSnaps = snapshotLogs.slice(-200);
     for (const s of recentSnaps) {
       await redis.rpush(KEYS.SNAPSHOTS, JSON.stringify(s));

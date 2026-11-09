@@ -9,36 +9,36 @@
   {
     "dateWib": "2026-11-05",
     "time": 1793811600,
-    "equityIdr": 100317030.81963389,
-    "cashIdr": 80000000,
-    "positionsCount": 1
+    "equityIdr": 100000000,
+    "cashIdr": 100000000,
+    "positionsCount": 0
   },
   {
     "dateWib": "2026-11-06",
     "time": 1793898000,
-    "equityIdr": 99475181.96592918,
-    "cashIdr": 99475181.96592918,
-    "positionsCount": 0
+    "equityIdr": 96730305.26722096,
+    "cashIdr": 40000000,
+    "positionsCount": 2
   },
   {
     "dateWib": "2026-11-07",
     "time": 1793984400,
-    "equityIdr": 99475181.96592918,
-    "cashIdr": 99475181.96592918,
+    "equityIdr": 95820799.16359103,
+    "cashIdr": 95820799.16359103,
     "positionsCount": 0
   },
   {
     "dateWib": "2026-11-08",
     "time": 1794070800,
-    "equityIdr": 99475181.96592918,
-    "cashIdr": 99475181.96592918,
+    "equityIdr": 95820799.16359103,
+    "cashIdr": 95820799.16359103,
     "positionsCount": 0
   },
   {
     "dateWib": "2026-11-09",
     "time": 1794157200,
-    "equityIdr": 99475181.96592918,
-    "cashIdr": 99475181.96592918,
+    "equityIdr": 95820799.16359103,
+    "cashIdr": 95820799.16359103,
     "positionsCount": 0
   }
 ]

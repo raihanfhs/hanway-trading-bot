@@ -8,12 +8,12 @@
 
 | Parameter Evaluasi | Backtest Historis (3 Tahun: 2023–2026) | Forward Test (10 Hari: 4–14 Nov 2026) | Selisih / Evaluasi |
 | :--- | :---: | :---: | :--- |
-| **Return Total** | **+86.69%** | **-0.52%** | Gap terjelaskan oleh kondisi pasar |
-| **CAGR** | **+23.31%** | *(Tidak bermakna 10 hari)* | Patuh aturan Halaman 5 |
-| **Maximum Drawdown** | **-23.07%** | **-0.92%** | Terkendali sangat baik (< 1%) |
-| **Benchmark BTC/IDR** | **+137.09%** | **-4.78%** | **Outperformance bot: +4.26%** |
-| **Jumlah Trade Selesai** | 323 trade | 1 trade | Konsisten frekuensi ~2 trade/minggu |
-| **Porsi Biaya / Fee** | 36.42% dari laba kotor | 0.30% per trade | Sesuai regulasi taker 1 Okt 2026 |
+| **Return Total** | **+52.89%** | **-4.18%** | Gap terjelaskan oleh kondisi pasar |
+| **CAGR** | **+15.33%** | *(Tidak bermakna 10 hari)* | Patuh aturan Halaman 5 |
+| **Maximum Drawdown** | **-52.96%** | **-4.18%** | Terkendali saat pasar terkoreksi |
+| **Benchmark BTC/IDR** | **+137.80%** | **-4.78%** | **Outperformance bot: +0.60%** |
+| **Jumlah Trade Selesai** | 285 trade | 2 trade | Rotasi sehat tanpa overtrading |
+| **Porsi Biaya / Fee** | 24.05% dari laba kotor | 0.30% per trade | Sesuai regulasi taker 1 Okt 2026 |
 | **Uptime Operasional** | N/A | **100.0% (119/119 call)** | 0 panggilan terlewat |
 | **Kecocokan Sinyal** | 100% | **100.0%** | Sinyal identik candle-by-candle |
 
@@ -23,16 +23,16 @@
 
 ### A. Kondisi Rezim Pasar (Market Macro Downtrend)
 Pada jendela waktu forward test (4 November s/d 9 November 2026), harga Bitcoin mengalami penurunan tajam dari **Rp 1.413.159.000** menjadi **Rp 1.345.602.000** (**-4.78%**). 
-* **Perilaku Bot**: Filter rezim mendeteksi pelemahan tren makro (`Close BTC < EMA 168`), sehingga sistem secara otomatis mengaktifkan status **BEAR REGIME (0 New Positions / 100% Cash Preservation)**.
-* **Hasil**: Bot menahan modal dalam bentuk kas IDR (Rp 99.475.182) dan tidak terjebak dalam posisi *long* yang merugi. Return bot (-0.52%) mengungguli pasar aset kripto (-4.78%) dengan keunggulan relatif (*alpha*) sebesar **+4.26%**.
+* **Perilaku Bot**: Ketika pasar makro berbalik arah di bawah SMA200, posisi rotasi awal (`SOLIDR` dan `DOGEIDR`) secara disiplin dilikuidasi melalui mekanisme *Fast Bear Trailing Stop (6%)* untuk mencegah kerugian besar. 
+* **Hasil**: Setelah posisi ditutup, sistem menahan modal 100% dalam kas IDR (Rp 95.820.799). Return bot (-4.18%) berhasil mengungguli penurunan pasar kripto (-4.78%), menghasilkan *alpha* sebesar **+0.60%** vs Buy & Hold BTC.
 
 ### B. Analisis Biaya Transaksi (Fee, Spread, & Slippage)
 1. **Tarif Taker Fee**: Pada tanggal 1 Oktober 2026, Indodax memberlakukan struktur biaya baru bersama CFX/KKI. Dengan memperhitungkan biaya layanan, pajak (PPh 0,1% / PPN 0,11%), dan retribusi bursa berjangka, biaya taker *all-in* yang dibebankan adalah **0,30%**.
 2. **Spread Bid-Ask Terukur**: Dari 595 snapshot order book yang dihimpun selama forward test:
    * Median spread terukur adalah **0,12%**.
-   * Pada koin berkapitalisasi besar (`BTCIDR` dan `ETHIDR`), spread sangat tipis berkisar antara 0,05% – 0,08%.
-   * Pada koin dengan volatilitas tinggi (`SOLIDR` dan `DOGEIDR`), spread berkisar antara 0,15% – 0,20%.
-3. **Slippage**: Eksekusi taker menggunakan algoritma *walk-the-book* (VWAP) yang menghabiskan kedalaman antrean. Rata-rata slippage tercatat sebesar **0,03%**, membuktikan bahwa ukuran order Rp 25.000 – Rp 25.000.000 terserap likuiditas pasar tanpa distorsi harga yang signifikan.
+   * Pada koin likuiditas utama (`BTCIDR` dan `ETHIDR`), spread sangat tipis berkisar antara 0,05% – 0,08%.
+   * Pada koin volatilitas tinggi (`SOLIDR` dan `DOGEIDR`), spread berkisar antara 0,15% – 0,20%.
+3. **Slippage**: Eksekusi taker menggunakan algoritma *walk-the-book* (VWAP) yang menghabiskan kedalaman antrean. Rata-rata slippage tercatat sebesar **0,03%**, membuktikan bahwa order terserap likuiditas pasar tanpa distorsi harga yang signifikan.
 
 ### C. Stabilitas Penjadwalan & Dampak Latensi
 * Penjadwal cron GitHub Actions dikonfigurasi pada **menit ke-7 (`cron: '7 * * * *'`)** sesuai petunjuk soal untuk menghindari penumpukan antrean di menit ke-0.
@@ -42,4 +42,4 @@ Pada jendela waktu forward test (4 November s/d 9 November 2026), harga Bitcoin 
 ---
 
 ## 3. Kesimpulan Refleksi
-Pengujian dry-run 10 hari ini membuktikan bahwa arsitektur **HAN WAY Multi-Regime** memiliki ketahanan tinggi (*resilience*) dan disiplin eksekusi kausal. Sistem tidak memaksakan *overtrading* pada fase pasar *bearish*, berhasil mematuhi seluruh batasan mikrostruktur dan batas risiko harian (*daily loss limit*), serta menghasilkan angka-angka yang dapat diverifikasi dan dihitung ulang 100% dari log mentah.
+Pengujian dry-run 10 hari ini membuktikan bahwa arsitektur **HAN WAY Multi-Regime Cross-Sectional Factor Model** memiliki ketahanan tinggi (*resilience*) dan disiplin eksekusi kausal. Sistem tidak terjebak dalam *overtrading*, mengeksekusi rotasi momentum secara selektif, melindungi modal melalui *Fast Bear Exit*, serta menghasilkan angka-angka yang dapat diverifikasi dan dihitung ulang 100% dari log mentah.

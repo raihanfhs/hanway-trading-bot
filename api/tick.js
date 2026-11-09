@@ -1,9 +1,9 @@
 // api/tick.js
 // Vercel Serverless Function: Hourly Tick Endpoint for HAN WAY Trading Bot
-// Protected by CRON_SECRET
+// Protected by CRON_SECRET & Upstash Redis Storage
 
 import { getServerTime, getOrderBook, getClosedCandles, simulateTakerExecution, PAIRS, SYMBOL_MAP, TAKER_FEE_RATE } from '../lib/indodax.js';
-import { getCryptoRegime, evaluateEntrySignal, evaluateExitSignal, validateCandles } from '../lib/strategy.js';
+import { getCryptoRegime, rankUniverseCandidates, evaluateExitSignal, validateCandles, UNIVERSE } from '../lib/strategy.js';
 import { 
   getBotState, saveBotState, 
   getOpenPositions, saveOpenPositions, 
@@ -51,7 +51,7 @@ export default async function handler(req, res) {
 
     // 3. Ambil waktu server Indodax & candle tertutup BTC
     const serverSec = await getServerTime();
-    const btcBars = await getClosedCandles('BTCIDR', 60, 180);
+    const btcBars = await getClosedCandles('BTCIDR', 60, 200);
 
     if (btcBars.length === 0) {
       throw new Error('Gagal mengambil candle tertutup BTCIDR');
@@ -80,19 +80,24 @@ export default async function handler(req, res) {
     // Hitung total equity berjalan (mark-to-market posisi ke best bid)
     let currentEquity = state.cashIdr;
     const depthMap = {};
+    const candleMap = {};
 
-    // Ambil order book live semua pasangan
+    // Ambil depth live dan candle semua koin di universe
     for (const pair of PAIRS) {
+      const sym = SYMBOL_MAP[pair];
       try {
         const depth = await getOrderBook(pair);
         depthMap[pair] = depth;
-        const sym = SYMBOL_MAP[pair];
+
+        const bars = (sym === 'BTCIDR') ? btcBars : await getClosedCandles(sym, 60, 180);
+        candleMap[sym] = bars;
+
         if (positions[sym] && depth.bids.length > 0) {
           const markPrice = depth.bids[0][0]; // Mark to market best bid
           currentEquity += positions[sym].cryptoAmount * markPrice;
         }
       } catch (err) {
-        console.warn(`Gagal fetch depth ${pair}: ${err.message}`);
+        console.warn(`Gagal fetch ${pair}: ${err.message}`);
       }
     }
 
@@ -104,7 +109,7 @@ export default async function handler(req, res) {
       state.dailyLossExceeded = true;
     }
 
-    // 6. Evaluasi Rezim Pasar Kripto
+    // 6. Evaluasi Rezim Pasar Makro (BTC vs SMA200)
     const regime = getCryptoRegime(btcBars);
 
     // 7. Simpan Order Book Snapshot untuk audit spread & slippage
@@ -126,11 +131,11 @@ export default async function handler(req, res) {
 
     const executedActions = [];
 
-    // 8. Evaluasi EXIT Posisi Terbuka
+    // 8. Evaluasi EXIT Posisi Terbuka (DUAL EXIT: Time Exit & Trailing Stop)
     for (const sym of Object.keys(positions)) {
       const pos = positions[sym];
-      const coinBars = await getClosedCandles(sym, 60, 180);
-      const exitEval = evaluateExitSignal(pos, coinBars);
+      const coinBars = candleMap[sym] || await getClosedCandles(sym, 60, 180);
+      const exitEval = evaluateExitSignal(pos, coinBars, regime);
 
       if (exitEval.action === 'SELL') {
         const pair = Object.keys(SYMBOL_MAP).find(k => SYMBOL_MAP[k] === sym);
@@ -162,6 +167,7 @@ export default async function handler(req, res) {
               feeIdr: pos.entryFeeIdr + fill.feeIdr,
               pnlIdr,
               pnlPct,
+              holdHours: exitEval.hoursHeld,
               bestBid: fill.bestBid,
               bestAsk: fill.bestAsk,
               slippagePct: fill.slippagePct,
@@ -174,66 +180,62 @@ export default async function handler(req, res) {
           }
         }
       } else {
-        pos.highestPrice = exitEval.newHighestPrice;
-        pos.stopLoss = exitEval.newStopLoss;
+        pos.peak = exitEval.peakPrice;
+        pos.hours = exitEval.hoursHeld;
       }
     }
 
-    // 9. Evaluasi ENTRY Baru
-    if (!state.dailyLossExceeded && Object.keys(positions).length < regime.maxPositions) {
-      for (const pair of PAIRS) {
-        const sym = SYMBOL_MAP[pair];
-        if (positions[sym]) continue;
-        if (Object.keys(positions).length >= regime.maxPositions) break;
+    // 9. Evaluasi ENTRY Baru (CROSS-SECTIONAL FACTOR RANKING)
+    const openSlots = regime.maxSlots - Object.keys(positions).length;
+    if (!state.dailyLossExceeded && openSlots > 0 && regime.regime === 'BULL') {
+      const rankedCandidates = rankUniverseCandidates(candleMap, regime, Object.keys(positions));
 
-        const coinBars = await getClosedCandles(sym, 60, 180);
-        const val = validateCandles(coinBars, 3600, serverSec);
-        if (!val.valid) continue;
+      for (const cand of rankedCandidates.slice(0, openSlots)) {
+        const pair = Object.keys(SYMBOL_MAP).find(k => SYMBOL_MAP[k] === cand.symbol);
+        const targetBudget = currentEquity * regime.slotWeight;
+        const allocIdr = Math.min(state.cashIdr, targetBudget);
 
-        const entryEval = evaluateEntrySignal(coinBars, regime);
-        if (entryEval.action === 'BUY') {
-          const targetBudget = currentEquity * regime.positionSizePct;
-          const allocIdr = Math.min(state.cashIdr, targetBudget);
+        if (allocIdr >= 25000) {
+          const depth = depthMap[pair];
+          if (depth) {
+            const fill = simulateTakerExecution('BUY', allocIdr, depth);
+            if (fill.success) {
+              state.cashIdr -= fill.netIdr;
 
-          if (allocIdr >= 25000) {
-            const depth = depthMap[pair];
-            if (depth) {
-              const fill = simulateTakerExecution('BUY', allocIdr, depth);
-              if (fill.success) {
-                state.cashIdr -= fill.netIdr;
+              positions[cand.symbol] = {
+                symbol: cand.symbol,
+                entryTime: serverSec,
+                entryPrice: fill.fillPrice,
+                cryptoAmount: fill.cryptoAmount,
+                costIdr: fill.netIdr,
+                entryFeeIdr: fill.feeIdr,
+                peak: fill.fillPrice,
+                hours: 0,
+                holdMaxHours: regime.holdMaxHours,
+                stopPct: regime.stopPct,
+                score: cand.score,
+                reason: cand.reason
+              };
 
-                positions[sym] = {
-                  symbol: sym,
-                  entryTime: serverSec,
-                  entryPrice: fill.fillPrice,
-                  cryptoAmount: fill.cryptoAmount,
-                  costIdr: fill.netIdr,
-                  entryFeeIdr: fill.feeIdr,
-                  stopLoss: entryEval.stopLoss,
-                  highestPrice: fill.fillPrice,
-                  atr: entryEval.atr,
-                  reason: entryEval.reason
-                };
+              const tradeRecord = {
+                tradeId: Date.now(),
+                symbol: cand.symbol,
+                side: 'BUY',
+                time: serverSec,
+                datetimeWib: wibDate.toISOString().replace('Z', '+07:00'),
+                fillPrice: fill.fillPrice,
+                cryptoAmount: fill.cryptoAmount,
+                costIdr: fill.netIdr,
+                feeIdr: fill.feeIdr,
+                bestBid: fill.bestBid,
+                bestAsk: fill.bestAsk,
+                slippagePct: fill.slippagePct,
+                score: cand.score,
+                reason: cand.reason
+              };
 
-                const tradeRecord = {
-                  tradeId: Date.now(),
-                  symbol: sym,
-                  side: 'BUY',
-                  time: serverSec,
-                  datetimeWib: wibDate.toISOString().replace('Z', '+07:00'),
-                  fillPrice: fill.fillPrice,
-                  cryptoAmount: fill.cryptoAmount,
-                  costIdr: fill.netIdr,
-                  feeIdr: fill.feeIdr,
-                  bestBid: fill.bestBid,
-                  bestAsk: fill.bestAsk,
-                  slippagePct: fill.slippagePct,
-                  reason: entryEval.reason
-                };
-
-                await appendTradeLog(tradeRecord);
-                executedActions.push(`BUY ${sym}: Rp ${Math.round(fill.netIdr).toLocaleString('id-ID')} @ Rp ${Math.round(fill.fillPrice).toLocaleString('id-ID')}`);
-              }
+              await appendTradeLog(tradeRecord);
+              executedActions.push(`BUY ${cand.symbol}: Rp ${Math.round(fill.netIdr).toLocaleString('id-ID')} @ Rp ${Math.round(fill.fillPrice).toLocaleString('id-ID')} (Rank Score: ${cand.score.toFixed(3)})`);
             }
           }
         }
