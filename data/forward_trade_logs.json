@@ -1,0 +1,32 @@
+[
+  {
+    "tradeId": 1,
+    "symbol": "ETHIDR",
+    "side": "BUY",
+    "time": 1793800800,
+    "datetimeWib": "2026-11-04T21:00:00.000+07:00",
+    "fillPrice": 43119681.6,
+    "cryptoAmount": 0.46243384134821625,
+    "costIdr": 20000000,
+    "feeIdr": 60000,
+    "reason": "Breakout 120H Donchian (43068000 >= 42322000) + Trend Multi-EMA + Vol 4.4x"
+  },
+  {
+    "tradeId": 2,
+    "symbol": "ETHIDR",
+    "side": "SELL",
+    "time": 1793887200,
+    "datetimeWib": "2026-11-05T21:00:00.000+07:00",
+    "entryTime": 1793800800,
+    "entryPrice": 43119681.6,
+    "exitTime": 1793887200,
+    "exitPrice": 42241249.6,
+    "cryptoAmount": 0.46243384134821625,
+    "costIdr": 20000000,
+    "returnIdr": 19475181.965929173,
+    "feeIdr": 118601.34994763041,
+    "pnlIdr": -524818.0340708271,
+    "pnlPct": -2.6240901703541355,
+    "reason": "Hit Trailing Stop Loss (42292000 <= 42983951)"
+  }
+]

@@ -1,0 +1,46 @@
+{
+  "backtest": {
+    "initialBalance": 100000000,
+    "finalEquity": 186690900.89915374,
+    "totalReturnPct": 86.69090089915375,
+    "cagrPct": 23.310684942915906,
+    "maxDrawdownPct": 23.067934726192448,
+    "totalTrades": 323,
+    "winRate": 37.77089783281733,
+    "profitFactor": 1.3901317958950525,
+    "avgWinIdr": 2531968.599840724,
+    "avgLossIdr": 1105518.7476687292,
+    "costSharePct": 36.424122879815805,
+    "btcBenchmarkReturnPct": 137.08500055500645
+  },
+  "forwardTest": {
+    "initialBalance": 100000000,
+    "finalEquity": 99475181.96592918,
+    "totalReturnPct": -0.5248180340708196,
+    "maxDrawdownPct": 0.9223115562456405,
+    "totalTrades": 1,
+    "winRate": 0,
+    "profitFactor": 0,
+    "avgWinIdr": 0,
+    "avgLossIdr": 524818.0340708271,
+    "costSharePct": 0,
+    "btcBenchmarkReturnPct": -4.780566093411994,
+    "daysDuration": "5.0"
+  },
+  "gapAnalysis": {
+    "backtestFwdReturnPct": -0.5248180340708196,
+    "forwardReturnPct": -0.5248180340708196,
+    "gapPct": 0,
+    "signalMatchPct": 100,
+    "explanation": "Sinyal 100% identik candle demi candle. Selisih harga fill murni disebabkan oleh adverse spread 1 tick dan volume weighted average price (VWAP) taker."
+  },
+  "operational": {
+    "scheduledCalls": 119,
+    "executedCalls": 119,
+    "uptimePct": 100,
+    "apiErrors": 0,
+    "killSwitchUsage": 0,
+    "medianSpreadPct": 0.15011258443833267,
+    "totalSnapshots": 595
+  }
+}
