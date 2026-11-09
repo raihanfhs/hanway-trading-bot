@@ -2,7 +2,7 @@
 > **Tugas Akhir Semester (UAS) Algoritma Trading (Trad1 & Trad2)**  
 > **Mahasiswa:** Raihan Firdaus Hadi Saputra &bull; **NIM:** 25110200049  
 > **Repositori Publik:** [https://github.com/raihanfhs/hanway-trading-bot](https://github.com/raihanfhs/hanway-trading-bot)  
-> **Bukti Freeze Commit:** `Rabu, 4 November 2026 pukul 11:50 WIB` (Hash: `2f62a23`) &bull; Tag: `v1.0.0-freeze`
+> **Status Jujur:** Proyek dimulai terlambat (9 Nov 2026). Tanggal commit sebelum 9 Nov dibuat ulang (backdate) dan **BUKAN bukti freeze yang sah**. Lihat [TRANSPARANSI.md](TRANSPARANSI.md).
 
 ---
 

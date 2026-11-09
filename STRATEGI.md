@@ -1,7 +1,7 @@
 # Dokumen Spesifikasi Strategi: HAN WAY Multi-Regime Cross-Sectional Factor Model (1 Jam)
 **Mata Kuliah:** Algorithmic Trading (Trad1 & Trad2) &bull; **UAS Gasal 2026**  
 **Penyusun:** Raihan Firdaus Hadi Saputra (NIM: 25110200049)  
-**Waktu Pembekuan (Freeze Date):** Rabu, 4 November 2026 pukul 11:50 WIB  
+**Waktu Pembekuan (Freeze Date):** lihat TRANSPARANSI.md (freeze asli ditetapkan pada tanggal commit nyata, bukan 4 Nov)
 
 ---
 
