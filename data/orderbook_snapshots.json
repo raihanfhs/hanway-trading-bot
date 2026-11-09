@@ -38,5 +38,45 @@
     "bestBid": 19647,
     "bestAsk": 19675,
     "spreadPct": 0.001425153967526849
+  },
+  {
+    "time": 1794215705,
+    "datetimeWib": "2026-11-09T16:15:05.000+07:00",
+    "symbol": "BTCIDR",
+    "bestBid": 1345561000,
+    "bestAsk": 1345947000,
+    "spreadPct": 0.00028686919433604274
+  },
+  {
+    "time": 1794215705,
+    "datetimeWib": "2026-11-09T16:15:05.000+07:00",
+    "symbol": "ETHIDR",
+    "bestBid": 38308000,
+    "bestAsk": 38309000,
+    "spreadPct": 0.00002610420799832933
+  },
+  {
+    "time": 1794215705,
+    "datetimeWib": "2026-11-09T16:15:05.000+07:00",
+    "symbol": "SOLIDR",
+    "bestBid": 1565959,
+    "bestAsk": 1568413,
+    "spreadPct": 0.0015670908369887079
+  },
+  {
+    "time": 1794215705,
+    "datetimeWib": "2026-11-09T16:15:05.000+07:00",
+    "symbol": "DOGEIDR",
+    "bestBid": 1251,
+    "bestAsk": 1253,
+    "spreadPct": 0.0015987210231814548
+  },
+  {
+    "time": 1794215705,
+    "datetimeWib": "2026-11-09T16:15:05.000+07:00",
+    "symbol": "XRPIDR",
+    "bestBid": 19760,
+    "bestAsk": 19790,
+    "spreadPct": 0.0015182186234817814
   }
 ]

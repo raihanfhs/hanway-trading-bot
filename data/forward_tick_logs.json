@@ -11,5 +11,18 @@
     "equityIdr": 100000000,
     "actions": [],
     "status": "SUCCESS"
+  },
+  {
+    "time": 1794215705,
+    "datetimeWib": "2026-11-09T16:15:05.000+07:00",
+    "scheduledTime": 1794214800,
+    "actualTime": 1794215705,
+    "latencySec": 905,
+    "regime": "BEAR",
+    "openPositions": 0,
+    "cashIdr": 100000000,
+    "equityIdr": 100000000,
+    "actions": [],
+    "status": "SUCCESS"
   }
 ]

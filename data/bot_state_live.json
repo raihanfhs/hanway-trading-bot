@@ -2,13 +2,13 @@
   "cashIdr": 100000000,
   "totalEquityIdr": 100000000,
   "initialBalanceIdr": 100000000,
-  "lastProcessedCandleTime": 1794207600,
+  "lastProcessedCandleTime": 1794211200,
   "dailyStartEquity": 100000000,
   "currentDayWib": "2026-11-09",
   "dailyLossExceeded": false,
   "killSwitchActive": false,
-  "uptimeTotalScheduled": 1,
-  "uptimeExecuted": 1,
+  "uptimeTotalScheduled": 2,
+  "uptimeExecuted": 2,
   "startedAt": "2026-11-09T15:10:24+07:00",
-  "lastUpdated": "2026-11-09T08:10:36.444Z"
+  "lastUpdated": "2026-11-09T09:15:17.945Z"
 }

@@ -25,8 +25,8 @@
     "avgLossIdr": 0,
     "costSharePct": 0,
     "btcBenchmarkReturnPct": 0,
-    "ticksCount": 1,
-    "daysDuration": "0.0"
+    "ticksCount": 2,
+    "daysDuration": "0.1"
   },
   "gapAnalysis": {
     "backtestFwdReturnPct": 0,
@@ -36,12 +36,12 @@
     "explanation": "Sinyal strategi dieksekusi secara deterministik menggunakan modul lib/strategy.js yang sama antara backtest dan live bot."
   },
   "operational": {
-    "scheduledCalls": 1,
-    "executedCalls": 1,
+    "scheduledCalls": 2,
+    "executedCalls": 2,
     "uptimePct": 100,
     "apiErrors": 0,
     "killSwitchUsage": 0,
-    "medianSpreadPct": 0.1425153967526849,
-    "totalSnapshots": 5
+    "medianSpreadPct": 0.15182186234817813,
+    "totalSnapshots": 10
   }
 }
